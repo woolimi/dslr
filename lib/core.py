@@ -42,3 +42,8 @@ def draw_scatter_plot(df, cols):
     for (x, y) in combi:
         sns.scatterplot(data=df, x=x, y=y, hue="Hogwarts House")
         plt.show()
+
+def draw_pair_plot(df, cols):
+    sns.pairplot(data=df, hue="Hogwarts House")
+    plt.savefig('result.png')
+    #plt.show()
