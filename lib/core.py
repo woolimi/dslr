@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from itertools import combinations
 
 def get_valid_values(values: pd.Series) -> pd.Series:
     """
@@ -23,6 +24,7 @@ def describe(filename):
     # from the visualization, what features are you going to use for your logistic regression?
 
 # Hogwarts House <- constantize?
+# classification for visualization?
 def get_dataframe(filename):
     df = pd.read_csv(filename, index_col="Index")
     return df
@@ -33,4 +35,10 @@ def get_numeric_columns(dataframe):
 def draw_histogram(df, cols):
     for column in cols:
         sns.histplot(data=df, x=column, hue="Hogwarts House")
+        plt.show()
+
+def draw_scatter_plot(df, cols):
+    combi = list(combinations(cols, 2))
+    for (x, y) in combi:
+        sns.scatterplot(data=df, x=x, y=y, hue="Hogwarts House")
         plt.show()
