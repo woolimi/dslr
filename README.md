@@ -9,3 +9,8 @@
 ```python
 pip install -r requirements.txt
 ```
+
+## Bonus
+
+- describe.py: add more fields like pandas.describe. `count`, `unique`, `top`, `freq`
+-
