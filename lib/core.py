@@ -1,5 +1,8 @@
 import pandas as pd
-import numpy as np
 
-def describe(filename):
-    df = pd.read_csv(filename, index_col="Index")
+def get_valid_values(values: pd.Series) -> pd.Series:
+    """
+    Return only valid values
+    """
+    return values[values == values]
+
