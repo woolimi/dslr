@@ -17,12 +17,13 @@ def describe(filename: str):
     # To compare with pandas describe function
     # print(df.describe(include='all'))
 
-    summary = pd.DataFrame()    
-    summary.index = ['count', 'unique', 'top', 'freq', 'mean', 'min', '25%', '50%', '75%', 'max', 'std']
+    summary = pd.DataFrame()
+    summary.index = ['type', 'count', 'unique', 'top', 'freq', 'mean', 'min', '25%', '50%', '75%', 'max', 'std']
 
     for column in df.columns:
         values = get_valid_values(df[column])
         summary[column] = [
+            df[column].dtype,
             math_count(values),
             math_unique(values),
             math_top(values),
