@@ -5,6 +5,12 @@ from lib.validate import is_csv
 from lib.math import math_count, math_unique, math_top, math_freq,\
     math_mean, math_min, math_max, math_std, math_quartiles
 
+def get_valid_values(values: pd.Series) -> pd.Series:
+    """
+    Return only valid values
+    """
+    return values[values == values]
+
 def describe(filename: str):
     """
     Describe the dataset in filename.

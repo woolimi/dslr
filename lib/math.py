@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def math_count(values: pd.Series) -> int:
     """
