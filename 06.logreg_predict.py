@@ -6,7 +6,7 @@ from lib.print import success, danger
 
 def check_predict_dataset(df: pd.DataFrame):
     if is_train_dataset(df):
-        print(f"{danger('Error: Dataset is not train dataset.')}")
+        print(f"{danger('Error: Dataset is not predict dataset.')}")
         exit(1)
 
 if __name__ == "__main__":
