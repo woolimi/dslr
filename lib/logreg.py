@@ -18,11 +18,22 @@ def batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
         thetas -= LEARNING_RATE * gradient
     return thetas
 
-def get_thetas(house: str, x: pd.DataFrame, y: pd.Series, option):
+def mini_batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
+    pass
+
+def stochastic_gradient_decent(x: pd.DataFrame, y: pd.Series):
+    pass
+
+def get_thetas(house: str, x: pd.DataFrame, y: pd.Series, algorithm: str = 'batch'):
     # Change house value either 1 or 0
     y = y.apply(lambda h: 1 if h == house else 0)
     # Calculate thetas
-    thetas = batch_gradient_decent(x, y)
+    if algorithm == 'mini-batch':
+        thetas = mini_batch_gradient_decent(x, y)
+    elif algorithm == 'stochastic':
+        thetas = stochastic_gradient_decent(x, y)
+    else:
+        thetas = batch_gradient_decent(x, y)
     return thetas
 
 def predict(x: pd.DataFrame, weights: pd.DataFrame) -> np.ndarray:

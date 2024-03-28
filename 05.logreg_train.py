@@ -13,6 +13,7 @@ def check_train_dataset(df: pd.DataFrame):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="logreg_train: train a logistic regression model")
     parser.add_argument("dataset_train", type=is_csv, help="Path to the .csv file")
+    parser.add_argument('-a', '--algorithm', choices=['batch', 'stochastic', 'mini-batch'], default='batch', help="Algorithm: 'batch', 'stochastic' or 'mini-batch'")  
     args = parser.parse_args()
 
     df = pd.read_csv(args.dataset_train, index_col="Index")
