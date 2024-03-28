@@ -1,2 +1,4 @@
 __pycache__
 weights.csv
+houses.csv
+dataset_truth.csv

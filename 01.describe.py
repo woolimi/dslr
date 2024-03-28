@@ -1,6 +1,5 @@
 import argparse
 import pandas as pd
-from lib.core import get_valid_values
 from lib.validate import is_csv
 from lib.math import math_count, math_unique, math_top, math_freq,\
     math_mean, math_min, math_max, math_std, math_quartiles
@@ -21,7 +20,7 @@ def describe(filename: str):
     df.drop(labels=['First Name', 'Last Name'], axis='columns', inplace=True)
 
     # To compare with pandas describe function
-    # print(df.describe(include='all'))
+    print(df.describe(include='all'))
 
     summary = pd.DataFrame()
     summary.index = ['type', 'count', 'unique', 'top', 'freq', 'mean', 'min', '25%', '50%', '75%', 'max', 'std']
