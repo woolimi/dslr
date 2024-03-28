@@ -18,7 +18,7 @@ def batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
         thetas -= LEARNING_RATE * gradient
     return thetas
 
-def get_thetas(house: str, x: pd.DataFrame, y: pd.Series):
+def get_thetas(house: str, x: pd.DataFrame, y: pd.Series, option):
     # Change house value either 1 or 0
     y = y.apply(lambda h: 1 if h == house else 0)
     # Calculate thetas
