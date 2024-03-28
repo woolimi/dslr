@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def math_count(values: pd.Series) -> int:
     """
@@ -63,7 +64,7 @@ def math_mean(values: pd.Series) -> float:
             tmp = (value - pd.Timestamp(0)).total_seconds()
             tmp = float(tmp)
             total += tmp
-        else:
+        elif value == value:
             total += value
     mean = total / nb_values
     if dtype == 'datetime64[ns]':
@@ -80,10 +81,13 @@ def math_std(values: pd.Series) -> float:
         return float('nan')
     m = math_mean(values)
     c = math_count(values)
-    squared_diff_sum = 0
+
+    sum = 0
     for value in values:
-        squared_diff_sum += (value - m) ** 2
-    return (squared_diff_sum / (c - 1)) ** 0.5
+        if value != value:
+            value = 0
+        sum += (value - m) ** 2
+    return (sum / (c - 1)) ** 0.5
 
 def math_min(values: pd.Series) -> float:
     """
