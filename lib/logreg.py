@@ -19,7 +19,27 @@ def batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
     return thetas
 
 def mini_batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
-    pass
+    thetas = np.zeros(x.shape[1])
+    batch_size = 15
+    m = len(x)
+    indices = np.random.permutation(m)
+    x_shuffled = x.iloc[indices]
+    y_shuffled = y.iloc[indices]
+    start_idx = 0
+
+    for _ in range(ITERATIONS):
+        start_idx = start_idx % m
+        end_idx = (start_idx + batch_size - 1) % m
+
+        x_batch = x_shuffled.iloc[start_idx:end_idx]
+        y_batch = y_shuffled.iloc[start_idx:end_idx]
+        
+        z = np.dot(x_batch, thetas)
+        h = sigmoid(z)
+        gradient = np.dot(x_batch.T, (h - y_batch)) / batch_size
+        thetas -= LEARNING_RATE * gradient
+        start_idx += batch_size
+    return thetas
 
 def stochastic_gradient_decent(x: pd.DataFrame, y: pd.Series):
     pass
