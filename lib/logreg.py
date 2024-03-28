@@ -51,7 +51,7 @@ def standardize(df: pd.DataFrame):
     std = df.apply(math_std)
     standardized_df = (df - mean) / std
     df[:] = standardized_df.values
-    return df.fillna(0)
+    return df.fillna(df.apply(math_mean))
 
 def accuracy(y1: np.ndarray, y2: np.ndarray) -> float:
     return (y1 == y2).sum() / len(y1)
