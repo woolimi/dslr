@@ -20,7 +20,7 @@ def batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
 
 def mini_batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
     thetas = np.zeros(x.shape[1])
-    batch_size = 15
+    batch_size = 5
     m = len(x)
     indices = np.random.permutation(m)
     x_shuffled = x.iloc[indices]
