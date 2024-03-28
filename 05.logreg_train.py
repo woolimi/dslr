@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     print(info('Start training...'))
     for house in houses:
-        thetas = get_thetas(house, x, y)
+        thetas = get_thetas(house, x, y, args.algorithm)
         weights[house] = thetas
 
     # Save weights
