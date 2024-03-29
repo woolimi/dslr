@@ -1,9 +1,9 @@
 import pandas as pd #
 import matplotlib.pyplot as plt
 import seaborn as sns
-from .core import get_valid_values
 from itertools import combinations
 from .math import math_mean, math_count, math_std
+from math import sqrt
 
 # def get_columns(
 # draw_histogram
@@ -66,9 +66,36 @@ class Visualization:
         # plt.show()
         plt.savefig('result.png')
 
-    # def calculate_pearson_corr_coef(column1, column2):
+    # if only it is allowed...
+    # def calculate_corr_coef(self):
+    #     df = self.df.select_dtypes('float64')
+    #     pd.set_option('display.max_columns', None)
+    #     print(df.corr(method='pearson'))
+    #     print(df.corr(method='kendall'))
+    #     print(df.corr(method='spearman'))
+
+    # difference...?
+    def calculate_corr_coef(self, column1, column2):
+        df = self.df[[column1, column2]]
+        means = df.apply(math_mean)
+        np = df.fillna(means).to_numpy()  # fill NaN with mean <
+        means = means.to_numpy()
+        co_var = 0
+        sq_dev_x = 0
+        sq_dev_y = 0
+        np_len = len(np)
+        for i in range (np_len):
+            dev = np[i] - means
+            co_var += dev[0] * dev[1]
+            sq_dev_x += dev[0] * dev[0]
+            sq_dev_y += dev[1] * dev[1]
+        r = co_var / (sqrt(sq_dev_x) * sqrt(sq_dev_y))
+        print(f"col1 : {column1}, col2: {column2}, corr: {r}")
+        print(df.corr(method='pearson'))
 
 
+
+    # TODO : add coef to the graph
     def draw_scatter_plots(self):
         # prerequisite of pearson coef - it should be continuous / follow bivariate normal distribution...
         cols =self.get_continuous_columns()
@@ -76,9 +103,9 @@ class Visualization:
         fig, axes = plt.subplots(10, 8, figsize=(56, 70))
         fig.suptitle('Scatter plot', fontsize=25)
         ax = None
-        print(len(combi))
         for i in range(10):
             for j, (x, y) in enumerate(combi[i * 8: i * 8 + 8]):
+                self.calculate_corr_coef(x, y)
                 if i == 9 and j == 5:
                     legend_shown = True
                 else:
