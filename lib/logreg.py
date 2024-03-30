@@ -22,7 +22,17 @@ def mini_batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
     pass
 
 def stochastic_gradient_decent(x: pd.DataFrame, y: pd.Series):
-    pass
+    thetas = np.zeros(x.shape[1])
+    for _ in range(ITERATIONS):
+        random_i = np.random.choice(len(x))
+        new_x = x.iloc[random_i]
+        if (_ == ITERATIONS - 1):
+            print(new_x)
+        z = np.dot(new_x, thetas)
+        h = sigmoid(z)
+        gradient = np.dot(new_x, (h - y[random_i]))
+        thetas -= LEARNING_RATE * gradient
+    return thetas
 
 def get_thetas(house: str, x: pd.DataFrame, y: pd.Series, algorithm: str = 'batch'):
     # Change house value either 1 or 0
