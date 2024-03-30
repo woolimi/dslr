@@ -1,4 +1,5 @@
 import pandas as pd
+from pandas.api.types import is_numeric_dtype
 import numpy as np
 
 def math_count(values: pd.Series) -> int:
@@ -55,7 +56,7 @@ def math_mean(values: pd.Series) -> float:
     Return the mean of the values
     """
     dtype = values.dtype
-    if dtype != 'float64' and dtype != 'datetime64[ns]':
+    if not is_numeric_dtype(dtype) and dtype != 'datetime64[ns]':
         return float('nan')
     nb_values = math_count(values)
     total = 0
