@@ -17,3 +17,8 @@ pip install -r requirements.txt
 - Mini-Batch
 - Stochastic
 - Regularization(?)
+
+## Resources
+
+- [Supervised Machine Learning: Regression and Classification](https://www.coursera.org/learn/machine-learning?specialization=machine-learning-introduction)
+- [Batch, Mini Batch & Stochastic Gradient Descent](https://towardsdatascience.com/batch-mini-batch-stochastic-gradient-descent-7a62ecba642a)

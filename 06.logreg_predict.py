@@ -24,5 +24,5 @@ if __name__ == "__main__":
     predicted_df = pd.DataFrame(columns=['Hogwarts House'], index=df.index)
     predicted_df['Hogwarts House'] = predict(x, weights)
     predicted_df.to_csv('houses.csv')
-    print(success('Predictions saved into houses.csv'))
+    print(f"Predictions saved into {success('./houses.csv')}")
 
