@@ -120,6 +120,25 @@ class Visualization:
             var_normalized = var_normalized.sort_values(by='variance', ascending=True)
             return (var_normalized['variance'], var['variance'])
 
+    def get_histogram_answer(self):
+        (d, _) = self._cal_distributions()
+        print(d)
+        if self.is_houses:
+            self.draw_histogram([d.columns[0]])
+        else:
+            self.draw_histogram([d.index[0]])
+
+    def get_scatter_plot_answer(self):
+        cols = self.get_continuous_columns()
+        combi = list(combinations(cols, 2))
+        corr = []
+        for x, y in combi:
+            corr.append([self._calculate_corr_coef(x, y), [x, y]])
+        corr.sort(key=lambda x: abs(x[0]), reverse=True)
+        for e in corr:
+            print(f"{e[0]} : {e[1][0]} - {e[1][1]}")
+        self.draw_scatter_plot(corr[0][1])
+
     def print_distributions(self):
         (d1, d2) = self._cal_distributions()
         print(d1)
@@ -161,7 +180,7 @@ class Visualization:
                 y_pos = ax.get_ylim()[1]
                 ax.text(x_pos, y_pos, text)
             plt.show()
-            
+
     def _calculate_corr_coef(self, column1:str, column2:str):
         df = self.df[[column1, column2]]
         means = df.apply(math_mean)
