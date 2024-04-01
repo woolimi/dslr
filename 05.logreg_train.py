@@ -20,7 +20,7 @@ if __name__ == "__main__":
     check_train_dataset(df)
 
     # Homogeneous     : Arithmancy, Potions, Care of Magical Creatures
-    # Similarity      : (Astronomy vs Defense Against the Dark Arts), (Transfiguration vs Care of Magical Creatures)
+    # Similarity      : (Astronomy vs Defense Against the Dark Arts), (Transfiguration vs History of Magic)
     df.drop(columns=['Arithmancy', 'Astronomy', 'Potions', 'Care of Magical Creatures', 'Transfiguration'], inplace=True)
     
     # Select numeric features
