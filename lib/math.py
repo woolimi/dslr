@@ -78,7 +78,7 @@ def math_std(values: pd.Series) -> float:
     Return the sample standard deviation of the values
     """
     dtype = values.dtype
-    if dtype != 'float64':
+    if not is_numeric_dtype(dtype):
         return float('nan')
     m = math_mean(values)
     c = math_count(values)
@@ -95,10 +95,10 @@ def math_min(values: pd.Series) -> float:
     Return the minimum value
     """
     dtype = values.dtype
-    if dtype != 'float64' and dtype != 'datetime64[ns]':
+    if not is_numeric_dtype(dtype) and dtype != 'datetime64[ns]':
         return float('nan')
 
-    minimum = values[0]
+    minimum = values.iloc[0]
     for value in values:
         if value < minimum:
             minimum = value
@@ -109,10 +109,10 @@ def math_max(values: pd.Series) -> float:
     Return the maximum value
     """
     dtype = values.dtype
-    if dtype != 'float64' and dtype != 'datetime64[ns]':
+    if not is_numeric_dtype(dtype) and dtype != 'datetime64[ns]':
         return float('nan')
 
-    maximum = values[0]
+    maximum = values.iloc[0]
     for value in values:
         if value > maximum:
             maximum = value

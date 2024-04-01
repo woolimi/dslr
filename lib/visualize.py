@@ -7,76 +7,133 @@ from math import sqrt
 from .validate import is_train_dataset
 from typing import List
 from lib.print import success, danger
+from pandas.api.types import is_numeric_dtype
 
-
-# def get_columns(
-# draw_histogram
-    # which Hogwarts course has a homogenous score "distribution" between all four houses
-# draw_scatter_plot
-    # what are the two features that are similar
-# draw_pair_plot
-    # from the visualization, what features are you going to use for your logistic regression?
-
-# parsing
-# draw
-# histogram -> avg / variance btw houses --> 정렬?
-# scatterplot -> coef --> 정렬?
-# pair plot -> coef 기준으로 정렬?
 class Visualization:
     criteria = "Hogwarts House"
     houses = ['Ravenclaw', 'Slytherin', 'Gryffindor', 'Hufflepuff']
-    is_houses = None
-    df = None
-    cols = None
 
-    @classmethod
-    def set_dataframe(cls, filename: str):
-        cls.df = pd.read_csv(filename, index_col="Index")
+    def set_dataframe(self, filename: str):
+        self.df = pd.read_csv(filename, index_col="Index")
     
-    @classmethod
-    def preprocess_data(cls):
-        print(cls.df)
-        if not cls.is_houses:
-            cls.df.drop([cls.criteria], axis=1, inplace=True)
-        cls.df['Best Hand'] = cls.df['Best Hand'].map({'Left': 0, 'Right': 1})
-        cls.df['Birth Month'] = pd.to_datetime(cls.df['Birthday']).dt.month
-        print(cls.df)
+    def preprocess_data(self):
+        if not self.is_houses:
+            self.df = self.df.drop([self.criteria], axis=1)
+        self.df['Best Hand'] = self.df['Best Hand'].map({'Left': 0, 'Right': 1})
+        self.df['Birth Month'] = pd.to_datetime(self.df['Birthday']).dt.month
     
-    @classmethod
-    def set_numeric_columns(cls):
-        cls.cols = cls.df.select_dtypes('number').columns
+    def set_numeric_columns(self):
+        self.cols = self.df.select_dtypes('number').columns
     
-    def get_numeric_columns(cls)->pd.DataFrame:
-        return cls.cols
+    def get_numeric_columns(self)->pd.DataFrame:
+        return self.cols
 
     def get_continuous_columns(self):
         return self.df.select_dtypes('float64').columns
     
-    # TODO : is_Aggregate
     def __init__(self, filename: str):
         self.set_dataframe(filename)
         self.is_houses = is_train_dataset(self.df) # and not is_aggregate
         self.preprocess_data()
         self.set_numeric_columns()
         
+    def distribution_by_house_from_total_avg(self, column, is_normalize=True):
+        res = []
+        df = self.df[[self.criteria, column]].dropna()
 
-    def _normalization(df: pd.DataFrame):
-        min = df.apply(math_min)
-        max = df.apply(math_max)
-        normalized_df = (df - min) / (max - min)
-        # df[:] =  normalized_df
-        return (normalized_df)
+        # normalize
+        if is_normalize:
+            min = math_min(df[column])
+            max = math_max(df[column])
+            df[column] = df[column].apply(lambda x: (x - min) / (max - min))
 
-    # TODO: add legend / change x label to 'Best Hand'
+        total_avg = math_mean(df[column])
+        for house in self.houses:
+            byhouse = df.loc[df[self.criteria] == house, column]
+            c = math_count(byhouse)
+            squared_diff_sum = 0
+            for v in byhouse:
+                squared_diff_sum += (v - total_avg) ** 2
+            res.append(squared_diff_sum / (c - 1))
+        return res
+
+    def distribution_by_house_from_house_avg(self, column, is_normalize=True):
+        res = []
+        df = self.df[[self.criteria, column]].dropna()
+
+        for house in self.houses:
+            byhouse = df.loc[df[self.criteria] == house, column]
+            
+            if is_normalize:
+                min = math_min(byhouse)
+                max = math_max(byhouse)
+                byhouse = byhouse.apply(lambda x: (x - min) / (max - min))
+            
+            c = math_count(byhouse)
+            m = math_mean(byhouse)
+            squared_diff_sum = 0
+            for v in byhouse:
+                squared_diff_sum += (v - m) ** 2
+            res.append(squared_diff_sum / (c - 1))
+        return res
+
+    def _get_variance(self, column: pd.Series, is_normalize=True)->float:
+        if not is_numeric_dtype(column.dtype):
+            return float('nan')
+        col = column.dropna()
+        if is_normalize:
+            min = math_min(col)
+            max = math_max(col)
+            col = col.apply(lambda x: (x - min) / (max - min))
+            return (math_std(col) ** 2)
+        return math_std(col) ** 2
+
+    def _cal_distributions(self):
+        if self.is_houses:
+            # generate dataframes using house names as index
+            df = pd.DataFrame(index=self.houses)
+            df2 = pd.DataFrame(index=self.houses)
+            pd.set_option('display.max_columns', None)
+            # write figures
+            for column in self.cols:
+                df[column] =  self.distribution_by_house_from_total_avg(column)
+                df2[column] =  self.distribution_by_house_from_total_avg(column, False)
+            # add range row
+            ranges = df.apply(lambda col: math_max(col)-math_min(col))
+            ranges2 = df2.apply(lambda col: math_max(col)-math_min(col))
+            df.loc['Range'] = ranges
+            df2.loc['Range'] = ranges2
+            # sort by range
+            df = df.sort_values(by='Range', ascending=True, axis=1)
+            df2 = df2.sort_values(by='Range', ascending=True, axis=1)
+            return (df, df2)
+        else:
+            # variance by attributes
+            var = pd.DataFrame()
+            var_normalized = pd.DataFrame()
+            df = self.df.select_dtypes(include='number')
+            mins = df.apply(math_min)
+            maxs = df.apply(math_max)
+            var['variance'] = df.apply(self._get_variance, args=(False,))
+            var_normalized['variance'] = df.apply(self._get_variance, args=(True,))
+            var = var.sort_values(by='variance', ascending=True)
+            var_normalized = var_normalized.sort_values(by='variance', ascending=True)
+            return (var_normalized['variance'], var['variance'])
+
+    def print_distributions(self):
+        (d1, d2) = self._cal_distributions()
+        print(d1)
+        print('------------------- before normalization ---------------------')
+        print(d2)
+
     def draw_all_histograms(self):
         fig, axes = plt.subplots(4, 4, figsize=(16, 16), dpi=100)
         fig.suptitle('Histogram', fontsize=25)
-        ax = None
         for i in range(4):
             for j, column in enumerate(self.cols[i*4:i*4+4]):
                 if self.is_houses:
                     legend_shown = i == 3 and j == 2
-                    ax = sns.histplot(ax=axes[i, j], data=self.df, x=column, hue=self.criteria, hue_order=self.houses, multiple='dodge', legend=legend_shown)
+                    ax = sns.histplot(ax=axes[i, j], data=self.df, x=column, hue=self.criteria, hue_order=self.houses, legend=legend_shown)
                 else:
                     ax = sns.histplot(ax=axes[i, j], data=self.df, x=column)
                 if j:
@@ -89,25 +146,26 @@ class Visualization:
         print(success("Histograms are saved in histograms.png"))
 
     def draw_histogram(self, columns: List[str]):
-        print(self.df)
         for c in columns:
             if self.is_houses:
                 ax = sns.histplot(data=self.df, x=c, hue=self.criteria, hue_order=self.houses, legend=True)
+                vars = self.distribution_by_house_from_total_avg(c, False)
+                text = f"[ {c} ]\n"
+                for i in range(4):
+                    text = text + f"{self.houses[i][0]} : {'{:.4f}'.format(vars[i])}\n"
+                print(text)
             else:
                 ax = sns.histplot(data=self.df, x=c)
-            var = math_std(self.df[i]) ** 2
-            text = "variance : " + str(var) + "\n"
-            if self.is_houses:
-                text += "btw houses by house avg : " + str(self.distribution_by_house_from_house_avg(c)) + "\n"
-                text += "btw houses by total avg : " + str(self.distribution_by_house_from_total_avg(c))
-            # ax.text(2, 2, text, fontsize=10)
-            print(text)
+                text = f"variance : {math_std(self.df[c]) ** 2}"
+                x_pos = ax.get_xlim()[0]
+                y_pos = ax.get_ylim()[1]
+                ax.text(x_pos, y_pos, text)
             plt.show()
             
     def _calculate_corr_coef(self, column1:str, column2:str):
         df = self.df[[column1, column2]]
         means = df.apply(math_mean)
-        np = df.fillna(means).to_numpy()  # fill NaN with mean <
+        np = df.fillna(means).to_numpy()
         means = means.to_numpy()
         co_var = 0
         sq_dev_x = 0
@@ -122,7 +180,6 @@ class Visualization:
         return coef
 
     def draw_scatter_plots(self):
-        # prerequisite of pearson coef - it should be continuous / follow bivariate normal distribution...
         cols =self.get_continuous_columns()
         combi = list(combinations(cols, 2))
         fig, axes = plt.subplots(10, 8, figsize=(56, 70))
@@ -178,69 +235,4 @@ class Visualization:
         plt.savefig('pair_plot.png')
         print(success("Pair plot is saved in pair_plot.png"))
 
-    # 전체 distribution으로부터 얼마나 동떨어져있는지
-    def distribution_by_house_from_total_avg(self, column):
-        res = []
-        df = self.df[[self.criteria, column]].dropna()
-
-        # normalize
-        df[column] = self._normalization(df[column])
-
-        total_avg = math_mean(df[column])
-        for house in self.houses:
-            byhouse = df.loc[df[self.criteria] == house, column]
-            c = math_count(byhouse)
-            squared_diff_sum = 0
-            for v in byhouse:
-                squared_diff_sum += (v - total_avg) ** 2
-            res.append(squared_diff_sum / (c - 1))
-        return res
-
-    # 한 하우스 내에서의 분포가 얼마나 분산되어 있는지 # normalize 필요....?
-    def distribution_by_house_from_house_avg(self, column):
-        res = []
-        df = self.df[[self.criteria, column]].dropna()
-        
-        # normalize
-        df[column] = self._normalization(df[column])
-        
-        for house in self.houses:
-            byhouse = df.loc[df[self.criteria] == house, column]
-            c = math_count(byhouse)
-            m = math_mean(byhouse)
-            squared_diff_sum = 0
-            for v in byhouse:
-                squared_diff_sum += (v - m) ** 2
-            res.append(squared_diff_sum / (c - 1))
-        return res
-
-    def get_distributions(self):
-        # generate dataframes using house names as index
-        df = pd.DataFrame(index=self.houses)
-        df2 = pd.DataFrame(index=self.houses)
-        pd.set_option('display.max_columns', None)
-        # write figures
-        for column in self.cols:
-            df[column] =  self.distribution_by_house_from_house_avg(column)
-            df2[column] =  self.distribution_by_house_from_total_avg(column)
-        # add range row
-        ranges = df.apply(lambda col: math_max(col)-math_min(col))
-        ranges2 = df2.apply(lambda col: math_max(col)-math_min(col))
-        df.loc['Range'] = ranges
-        df2.loc['Range'] = ranges2
-        # sort by range
-        df = df.sort_values(by='Range', ascending=True, axis=1)
-        df2 = df2.sort_values(by='Range', ascending=True, axis=1)
-
-        # variance by attributes
-        df3 = pd.DataFrame()
-        df4 = pd.DataFrame()
-        df3['variance'] = self.df.select_dtypes(include='number').apply(lambda col: math_std(col)**2)
-        df4['variance'] = self.df.select_dtypes(include='number').apply(self._normalization).apply(lambda col: math_std(col)**2)
-        # print(df3['Transfiguration'])
-        # print(df4['Transfiguration'])
-        df3 = df3.sort_values(by='variance', ascending=True)
-        df4 = df4.sort_values(by='variance', ascending=True)
-        print(df3)
-        print(df4)
-        return (df, df2, df3)
+    
