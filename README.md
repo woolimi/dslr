@@ -16,7 +16,7 @@ pip install -r requirements.txt
 - Multiple graph & info: histogram, scatter_plot
 - Mini-Batch
 - Stochastic
-- Regularization(?)
+- Train loss graph for each algorithms
 
 ## Resources
 
