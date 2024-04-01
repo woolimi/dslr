@@ -20,7 +20,7 @@ def describe(filename: str):
     df.drop(labels=['First Name', 'Last Name'], axis='columns', inplace=True)
 
     # To compare with pandas describe function
-    print(df.describe(include='all'))
+    # print(df.describe(include='all'))
 
     summary = pd.DataFrame()
     summary.index = ['type', 'count', 'unique', 'top', 'freq', 'mean', 'min', '25%', '50%', '75%', 'max', 'std']
