@@ -3,20 +3,24 @@ import pandas as pd
 from lib.math import math_mean, math_std
 
 LEARNING_RATE = 0.5
-ITERATIONS = 1000
+ITERATIONS = 2000
 
 def sigmoid(z: np.ndarray) -> np.ndarray:
     return 1 / (1 + np.exp(-z))
 
 def batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
     thetas = np.zeros(x.shape[1])
+    losses = []
+    
     for _ in range(ITERATIONS):
         # (1600, 9) * (9 x 1)
         z = np.dot(x, thetas)
         h = sigmoid(z)
+        loss = -np.mean(y * np.log(h) + (1 - y) * np.log(1 - h)) 
+        losses.append(loss)
         gradient = np.dot(x.T, (h - y)) / y.size
         thetas -= LEARNING_RATE * gradient
-    return thetas
+    return thetas, losses
 
 def mini_batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
     thetas = np.zeros(x.shape[1])
@@ -26,6 +30,7 @@ def mini_batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
     x_shuffled = x.iloc[indices]
     y_shuffled = y.iloc[indices]
     start_idx = 0
+    losses = []
 
     for _ in range(ITERATIONS):
         start_idx = start_idx % m
@@ -36,33 +41,42 @@ def mini_batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
         
         z = np.dot(x_batch, thetas)
         h = sigmoid(z)
+        loss = -np.mean(y_batch * np.log(h) + (1 - y_batch) * np.log(1 - h)) 
+        if _ % 100 == 0:
+            print(loss)
+        losses.append(loss)
         gradient = np.dot(x_batch.T, (h - y_batch)) / batch_size
         thetas -= LEARNING_RATE * gradient
         start_idx += batch_size
-    return thetas
+    return thetas, losses
 
 def stochastic_gradient_decent(x: pd.DataFrame, y: pd.Series):
     thetas = np.zeros(x.shape[1])
+    losses = []
+
     for _ in range(ITERATIONS):
         random_i = np.random.choice(len(x))
         new_x = x.iloc[random_i]
         z = np.dot(new_x, thetas)
         h = sigmoid(z)
+        loss = -np.mean(y * np.log(h) + (1 - y[random_i]) * np.log(1 - h)) 
+        losses.append(loss)
         gradient = np.dot(new_x, (h - y[random_i]))
         thetas -= LEARNING_RATE * gradient
-    return thetas
+    return thetas, losses
 
 def get_thetas(house: str, x: pd.DataFrame, y: pd.Series, algorithm: str = 'batch'):
     # Change house value either 1 or 0
     y = y.apply(lambda h: 1 if h == house else 0)
     # Calculate thetas
     if algorithm == 'mini-batch':
-        thetas = mini_batch_gradient_decent(x, y)
+        thetas, losses = mini_batch_gradient_decent(x, y)
     elif algorithm == 'stochastic':
-        thetas = stochastic_gradient_decent(x, y)
+        thetas, losses = stochastic_gradient_decent(x, y)
     else:
-        thetas = batch_gradient_decent(x, y)
-    return thetas
+        thetas, losses = batch_gradient_decent(x, y)
+
+    return thetas, losses
 
 def predict(x: pd.DataFrame, weights: pd.DataFrame) -> np.ndarray:
     houses = weights.columns

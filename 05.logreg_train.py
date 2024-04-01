@@ -1,9 +1,10 @@
 import argparse
-from lib.validate import is_csv
 import pandas as pd
+from lib.validate import is_csv
 from lib.print import success, info, danger
 from lib.logreg import get_thetas, predict, standardize, accuracy, insert_bias
 from lib.validate import is_train_dataset
+import matplotlib.pyplot as plt
 
 def check_train_dataset(df: pd.DataFrame):
     if not is_train_dataset(df):
@@ -34,8 +35,15 @@ if __name__ == "__main__":
     print(info(f'Start training...'))
     print(info(f"Algorithm: {args.algorithm}"))
     for house in houses:
-        thetas = get_thetas(house, x, y, args.algorithm)
+        thetas, losses = get_thetas(house, x, y, args.algorithm)
         weights[house] = thetas
+        plt.plot(range(0, 2000), losses, label=house)
+
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Loss Function by Epoch')
+    plt.savefig(f'train-{args.algorithm}.png')
+
 
     # Save weights
     weights.to_csv('weights.csv')
