@@ -2,7 +2,7 @@ import argparse
 import pandas as pd
 from lib.validate import is_csv
 from lib.print import success, info, danger
-from lib.logreg import get_thetas, predict, standardize, accuracy, insert_bias
+from lib.logreg import get_thetas, predict, standardize, accuracy, insert_bias, ITERATIONS
 from lib.validate import is_train_dataset
 import matplotlib.pyplot as plt
 
@@ -34,10 +34,11 @@ if __name__ == "__main__":
 
     print(info(f'Start training...'))
     print(info(f"Algorithm: {args.algorithm}"))
+    plt.figure(figsize=(15, 5)) 
     for house in houses:
         thetas, losses = get_thetas(house, x, y, args.algorithm)
         weights[house] = thetas
-        plt.plot(range(0, 2000), losses, label=house)
+        plt.plot(range(0, ITERATIONS), losses, label=house)
 
     plt.xlabel('Epoch')
     plt.ylabel('Loss')

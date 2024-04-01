@@ -3,17 +3,16 @@ import pandas as pd
 from lib.math import math_mean, math_std
 
 LEARNING_RATE = 0.5
-ITERATIONS = 2000
+ITERATIONS = 1000
 
 def sigmoid(z: np.ndarray) -> np.ndarray:
     return 1 / (1 + np.exp(-z))
 
-def batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
+def batch_gradient_descent(x: pd.DataFrame, y: pd.Series):
     thetas = np.zeros(x.shape[1])
     losses = []
     
     for _ in range(ITERATIONS):
-        # (1600, 9) * (9 x 1)
         z = np.dot(x, thetas)
         h = sigmoid(z)
         loss = -np.mean(y * np.log(h) + (1 - y) * np.log(1 - h)) 
@@ -22,35 +21,27 @@ def batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
         thetas -= LEARNING_RATE * gradient
     return thetas, losses
 
-def mini_batch_gradient_decent(x: pd.DataFrame, y: pd.Series):
+def mini_batch_gradient_descent(x: pd.DataFrame, y: pd.Series, batch_size=5):
     thetas = np.zeros(x.shape[1])
-    batch_size = 5
     m = len(x)
-    indices = np.random.permutation(m)
-    x_shuffled = x.iloc[indices]
-    y_shuffled = y.iloc[indices]
-    start_idx = 0
     losses = []
 
     for _ in range(ITERATIONS):
-        start_idx = start_idx % m
-        end_idx = (start_idx + batch_size - 1) % m
-
-        x_batch = x_shuffled.iloc[start_idx:end_idx]
-        y_batch = y_shuffled.iloc[start_idx:end_idx]
+        # Select 10 random indices
+        random_indices = np.random.choice(m, size=batch_size, replace=False)
+        x_batch = x.iloc[random_indices]
+        y_batch = y.iloc[random_indices]
         
         z = np.dot(x_batch, thetas)
         h = sigmoid(z)
         loss = -np.mean(y_batch * np.log(h) + (1 - y_batch) * np.log(1 - h)) 
-        if _ % 100 == 0:
-            print(loss)
         losses.append(loss)
         gradient = np.dot(x_batch.T, (h - y_batch)) / batch_size
         thetas -= LEARNING_RATE * gradient
-        start_idx += batch_size
     return thetas, losses
 
-def stochastic_gradient_decent(x: pd.DataFrame, y: pd.Series):
+
+def stochastic_gradient_descent(x: pd.DataFrame, y: pd.Series):
     thetas = np.zeros(x.shape[1])
     losses = []
 
@@ -59,7 +50,7 @@ def stochastic_gradient_decent(x: pd.DataFrame, y: pd.Series):
         new_x = x.iloc[random_i]
         z = np.dot(new_x, thetas)
         h = sigmoid(z)
-        loss = -np.mean(y * np.log(h) + (1 - y[random_i]) * np.log(1 - h)) 
+        loss = -np.mean(y[random_i] * np.log(h) + (1 - y[random_i]) * np.log(1 - h)) 
         losses.append(loss)
         gradient = np.dot(new_x, (h - y[random_i]))
         thetas -= LEARNING_RATE * gradient
@@ -70,11 +61,11 @@ def get_thetas(house: str, x: pd.DataFrame, y: pd.Series, algorithm: str = 'batc
     y = y.apply(lambda h: 1 if h == house else 0)
     # Calculate thetas
     if algorithm == 'mini-batch':
-        thetas, losses = mini_batch_gradient_decent(x, y)
+        thetas, losses = mini_batch_gradient_descent(x, y)
     elif algorithm == 'stochastic':
-        thetas, losses = stochastic_gradient_decent(x, y)
+        thetas, losses = stochastic_gradient_descent(x, y)
     else:
-        thetas, losses = batch_gradient_decent(x, y)
+        thetas, losses = batch_gradient_descent(x, y)
 
     return thetas, losses
 
