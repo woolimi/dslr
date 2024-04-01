@@ -17,7 +17,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     df = pd.read_csv(args.dataset_test, index_col="Index")
-    df.drop(columns=['Hogwarts House', 'Arithmancy', 'Astronomy', 'Potions', 'Care of Magical Creatures', 'Transfiguration'], inplace=True)
+    df.drop(columns=['Hogwarts House', 'Arithmancy', 'Astronomy', 'Potions', 'Care of Magical Creatures', 'Transfiguration', 'Flying'], inplace=True)
     x = insert_bias(standardize(df.select_dtypes(include='number')))
     weights = pd.read_csv(args.weights, index_col='Thetas')
 

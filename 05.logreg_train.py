@@ -20,8 +20,8 @@ if __name__ == "__main__":
     check_train_dataset(df)
 
     # Homogeneous     : Arithmancy, Potions, Care of Magical Creatures
-    # Similarity      : (Astronomy vs Defense Against the Dark Arts), (Transfiguration vs History of Magic)
-    df.drop(columns=['Arithmancy', 'Astronomy', 'Potions', 'Care of Magical Creatures', 'Transfiguration'], inplace=True)
+    # Similarity      : (Astronomy vs Defense Against the Dark Arts), (Transfiguration vs History of Magic vs Flying)
+    df.drop(columns=['Arithmancy', 'Astronomy', 'Potions', 'Care of Magical Creatures', 'Transfiguration', 'Flying'], inplace=True)
     
     # Select numeric features
     x = insert_bias(standardize(df.select_dtypes(include='number')))
