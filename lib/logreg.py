@@ -27,7 +27,6 @@ def mini_batch_gradient_descent(x: pd.DataFrame, y: pd.Series, batch_size=5):
     losses = []
 
     for _ in range(ITERATIONS):
-        # Select 10 random indices
         random_indices = np.random.choice(m, size=batch_size, replace=False)
         x_batch = x.iloc[random_indices]
         y_batch = y.iloc[random_indices]
