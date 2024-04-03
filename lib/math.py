@@ -55,22 +55,25 @@ def math_mean(values: pd.Series) -> float:
     """
     Return the mean of the values
     """
-    dtype = values.dtype
-    if not is_numeric_dtype(dtype) and dtype != 'datetime64[ns]':
-        return float('nan')
-    nb_values = math_count(values)
-    total = 0
-    for value in values:
+    try:
+        dtype = values.dtype
+        if not is_numeric_dtype(dtype) and dtype != 'datetime64[ns]':
+            return float('nan')
+        nb_values = math_count(values)
+        total = 0
+        for value in values:
+            if dtype == 'datetime64[ns]':
+                tmp = (value - pd.Timestamp(0)).total_seconds()
+                tmp = float(tmp)
+                total += tmp
+            elif value == value:
+                total += value
+        mean = total / nb_values
         if dtype == 'datetime64[ns]':
-            tmp = (value - pd.Timestamp(0)).total_seconds()
-            tmp = float(tmp)
-            total += tmp
-        elif value == value:
-            total += value
-    mean = total / nb_values
-    if dtype == 'datetime64[ns]':
-        mean = pd.Timestamp(0) + pd.to_timedelta(mean, unit='s')
-    return mean
+            mean = pd.Timestamp(0) + pd.to_timedelta(mean, unit='s')
+        return mean
+    except:
+        return float('nan')
 
 
 def math_std(values: pd.Series) -> float:
@@ -94,42 +97,50 @@ def math_min(values: pd.Series) -> float:
     """
     Return the minimum value
     """
-    dtype = values.dtype
-    if not is_numeric_dtype(dtype) and dtype != 'datetime64[ns]':
-        return float('nan')
+    try:
+        dtype = values.dtype
+        if not is_numeric_dtype(dtype) and dtype != 'datetime64[ns]':
+            return float('nan')
 
-    minimum = values.iloc[0]
-    for value in values:
-        if value < minimum:
-            minimum = value
-    return minimum
+        minimum = values.iloc[0]
+        for value in values:
+            if value < minimum:
+                minimum = value
+        return minimum
+    except:
+        return float('nan')
 
 def math_max(values: pd.Series) -> float:
     """
     Return the maximum value
     """
-    dtype = values.dtype
-    if not is_numeric_dtype(dtype) and dtype != 'datetime64[ns]':
+    try:
+        dtype = values.dtype
+        if not is_numeric_dtype(dtype) and dtype != 'datetime64[ns]':
+            return float('nan')
+
+        maximum = values.iloc[0]
+        for value in values:
+            if value > maximum:
+                maximum = value
+        return maximum
+    except:
         return float('nan')
-
-    maximum = values.iloc[0]
-    for value in values:
-        if value > maximum:
-            maximum = value
-    return maximum
-
 
 
 def math_quartiles(values: pd.Series, position: float) -> float:
     """
     Return the quartile at position
     """
-    dtype = values.dtype
-    if dtype != 'float64' and dtype != 'datetime64[ns]':
+    try:
+        dtype = values.dtype
+        if dtype != 'float64' and dtype != 'datetime64[ns]':
+            return float('nan')
+        sorted_list = sorted(values)
+        n = len(sorted_list)
+        return _interpolate(sorted_list, (n - 1) * position)
+    except:
         return float('nan')
-    sorted_list = sorted(values)
-    n = len(sorted_list)
-    return _interpolate(sorted_list, (n - 1) * position)
 
 def _interpolate(values, index):
     """
