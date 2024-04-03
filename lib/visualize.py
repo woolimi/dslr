@@ -33,7 +33,7 @@ class Visualization:
     
     def __init__(self, filename: str):
         self.set_dataframe(filename)
-        self.is_houses = is_train_dataset(self.df) # and not is_aggregate
+        self.is_houses = is_train_dataset(self.df)
         self.preprocess_data()
         self.set_numeric_columns()
         
@@ -123,10 +123,16 @@ class Visualization:
     def get_histogram_answer(self):
         (d, _) = self._cal_distributions()
         print(d)
+        i = 0
+        excluded_columns = ['Best Hand', 'Birth Month']
         if self.is_houses:
-            self.draw_histogram([d.columns[0]])
+            while (d.columns[i] in excluded_columns):
+                i += 1
+            self.draw_histogram([d.columns[i]])
         else:
-            self.draw_histogram([d.index[0]])
+            while (d.index[i] in excluded_columns):
+                i += 1
+            self.draw_histogram([d.index[i]])
 
     def get_scatter_plot_answer(self):
         cols = self.get_continuous_columns()
