@@ -8,7 +8,7 @@ def main():
     parser = argparse.ArgumentParser(description="histogram: draw histogram and show distributions btw attributes and houses")
     parser.add_argument("csv_file", type=is_csv, help="Path to the .csv file")
     parser.add_argument("-a", "--all", action="store_true", help="option to show all histograms")
-    parser.add_argument("columns", nargs="?", help="name columns you want to see")
+    parser.add_argument("columns", nargs="*", help="name columns you want to see")#
     args = parser.parse_args()
 
     if args.all and args.columns:
