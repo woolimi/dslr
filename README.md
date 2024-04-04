@@ -1,6 +1,6 @@
 # DSLR
 
-![./magic-hat.jpeg](harry porter magic hat)
+![harry porter magic hat](./magic-hat.jpeg)
 
 Data Science X Logistic Regression - Harry Potter and a Data Scientist
 
