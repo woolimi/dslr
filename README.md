@@ -1,5 +1,9 @@
 # DSLR
 
+Data Science X Logistic Regression - Harry Potter and a Data Scientist
+
+This project is to create an AI that assigns Harry Potter dormitories using student data sets. First, preprocess the given data in an appropriate way. Next, visualize it through histograms and scatter plots and decide which features to select to train the AI. Lastly, AI is developed through Logistic regression.
+
 ## Requirements
 
 - Python version 3.10.13
