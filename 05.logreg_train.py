@@ -2,7 +2,7 @@ import argparse
 import pandas as pd
 from lib.validate import is_csv
 from lib.print import success, info, danger
-from lib.logreg import get_thetas, predict, standardize, accuracy, insert_bias, ITERATIONS
+from lib.logreg import get_thetas, predict, zscore_normalize, accuracy, insert_bias, ITERATIONS
 from lib.validate import is_train_dataset
 import matplotlib.pyplot as plt
 
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     df.drop(columns=['Arithmancy', 'Astronomy', 'Potions', 'Care of Magical Creatures', 'Transfiguration', 'Flying'], inplace=True)
     
     # Select numeric features
-    x = insert_bias(standardize(df.select_dtypes(include='number')))
+    x = insert_bias(zscore_normalize(df.select_dtypes(include='number')))
     y = df['Hogwarts House']
 
     houses = y.unique()

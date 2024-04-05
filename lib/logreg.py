@@ -89,11 +89,11 @@ def normalize(df: pd.DataFrame):
     df[:] = normalized_df.values
     return df
 
-def standardize(df: pd.DataFrame):
+def zscore_normalize(df: pd.DataFrame):
     mean = df.apply(math_mean)
     std = df.apply(math_std)
-    standardized_df = (df - mean) / std
-    df[:] = standardized_df.values
+    zscore_normalized_df = (df - mean) / std
+    df[:] = zscore_normalized_df.values
     return df.fillna(df.apply(math_mean))
 
 def accuracy(y1: np.ndarray, y2: np.ndarray) -> float:
