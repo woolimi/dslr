@@ -1,5 +1,4 @@
 __pycache__
-*.png
 weights.csv
 houses.csv
 # dataset_truth.csv

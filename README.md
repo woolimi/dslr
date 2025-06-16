@@ -8,25 +8,44 @@ This is a 42 AI project to create an AI that assigns Harry Potter dormitories us
 
 ## Requirements
 
-- Python version 3.10.13
+- Python version 3.12.3
 
 ## Installation
 
 ```python
-pip install -r requirements.txt
+# python3 -m venv venv
+# source venv/bin/activate
+pip3 install -r requirements.txt
 ```
 
 ## How to run
 
 ```terminal
 python 01.describe.py dataset_train.csv
-python 02.histogram.py dataset_train.csv
-python 03.scatter_plot.py dataset_train.csv
-python 04.pair_plot.py dataset_train.csv
+python 02.histogram.py dataset_train.csv --all
+python 03.scatter_plot.py dataset_train.csv --all
+python 04.pair_plot.py dataset_train.csv --all
 python 05.logreg_train.py dataset_train.csv
 python 06.logreg_predict.py dataset_test.csv weights.csv
 python 07.evaluate.py
 ```
+
+## Data visualization
+
+### Histograms
+
+![histograms](./histograms.png)
+
+### Scatter Plots
+
+![scatter plots](./scatter_plots.png)
+
+### Pair Plots
+
+![pair plots](./pair_plot.png)
+
+- Homogeneous : Arithmancy, Potions, Care of Magical Creatures
+- Similarity : (Astronomy vs Defense Against the Dark Arts), (Transfiguration vs History of Magic vs Flying)
 
 ## Bonus
 
